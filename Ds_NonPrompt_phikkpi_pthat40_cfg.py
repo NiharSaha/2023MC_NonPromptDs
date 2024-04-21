@@ -1,20 +1,21 @@
 
 1;95;0cimport FWCore.ParameterSet.Config as cms
 from Configuration.Generator.Pythia8CommonSettings_cfi import *
-from Configuration.Generator.MCTunes2017.PythiaCP5Settings_cfi import *
+from Configuration.Generator.MCTunesRun3ECM13p6TeV.PythiaCP5Settings_cfi import *
 from GeneratorInterface.EvtGenInterface.EvtGenSetting_cff import *
 
-generator = cms.EDFilter("Pythia8GeneratorFilter",
+_generator = cms.EDFilter("Pythia8GeneratorFilter",
                          pythiaPylistVerbosity = cms.untracked.int32(0),
                          pythiaHepMCVerbosity = cms.untracked.bool(False),
                          comEnergy = cms.double(5360.0),
                          maxEventsToPrint = cms.untracked.int32(0),
                          ExternalDecays = cms.PSet(
                              EvtGen130 = cms.untracked.PSet(
-                                 decay_table = cms.string('GeneratorInterface/EvtGenInterface/data/DECAY_2010.DEC'),
-                                 operates_on_particles = cms.vint32(),
-                                 particle_property_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/evt.pdl'),
+                                 decay_table = cms.string('GeneratorInterface/EvtGenInterface/data/DECAY_2014_NOLONGLIFE.DEC'),
+                                 particle_property_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/evt_2014.pdl'),
                                  list_forced_decays = cms.vstring('MyD_s+','MyD_s-'),
+                                 operates_on_particles = cms.vint32(),
+                                 convertPythiaCodes = cms.untracked.bool(False),
                                  user_decay_embedded= cms.vstring(
                                      """
                                      Alias        MyD_s+                 D_s+
@@ -51,6 +52,8 @@ generator = cms.EDFilter("Pythia8GeneratorFilter",
                          )
                      )
 
+from GeneratorInterface.Core.ExternalGeneratorFilter import ExternalGeneratorFilter
+generator = ExternalGeneratorFilter(_generator)
 generator.PythiaParameters.processParameters.extend(EvtGenExtraParticles)
 
 partonfilter = cms.EDFilter("PythiaFilter",
